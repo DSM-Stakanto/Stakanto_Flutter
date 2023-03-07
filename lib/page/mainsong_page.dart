@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class MainSongPage extends StatefulWidget {
+  const MainSongPage({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MainSongPage> createState() => _MainSongPageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MainSongPageState extends State<MainSongPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,11 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   colors: [Color(0xff7758D1), Color(0xffE000FF)]
               )
           ),
-        child: Center(
-          child: Text('HelloWorld'),
-        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(),
     );
   }
 }
