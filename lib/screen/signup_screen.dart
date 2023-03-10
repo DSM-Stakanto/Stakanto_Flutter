@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stakanto/screen/login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -27,24 +28,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
             SizedBox(
               height: 30,
             ),
+            SizedBox(
+              height: 30,
+            ),
             TextInput(width, 'Input ID'),
             TextInput(width, 'Input Password'),
             SizedBox(
-                child: ElevatedButton(
-                  onPressed: () {},
-                    child: const Text(
-                      'SignUp',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white
-                      ),
-                    ),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xff342D67)
-                  ),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                },
+                child: const Text(
+                  'SignUp',
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
+                style: ElevatedButton.styleFrom(primary: Color(0xff342D67)),
               ),
+            ),
           ],
         ),
       ),

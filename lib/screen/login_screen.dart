@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stakanto/screen/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -48,7 +49,10 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(
 
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                  },
                     child: Text(
                       'Login',
                       style: TextStyle(

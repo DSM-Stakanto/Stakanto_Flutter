@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     FlutterNativeSplash.remove();
     return MaterialApp(
-      home: const HomeScreen(),
+      home: const SignUpScreen(),
     );
   }
 }
