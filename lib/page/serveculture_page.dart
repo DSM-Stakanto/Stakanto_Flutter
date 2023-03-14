@@ -31,9 +31,7 @@ class _ServeCulturePageState extends State<ServeCulturePage> {
                       children: [
                         Text('Jpop', style: TextStyle(
                             color: Colors.white,
-                  )
-
-
+                    )
                   ),
                       ],
                     ),)

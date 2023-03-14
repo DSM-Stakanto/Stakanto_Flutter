@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:stakanto/image_list.dart';
 import 'package:stakanto/screen/login_screen.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -9,9 +14,20 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nickNameController = TextEditingController();
+  String img_link = "https://cdn.discordapp.com/attachments/872481713949917228/1062208607053156422/image.png";
+
+
+
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    Random random = Random();
+    int randomIndex = random.nextInt(ImageLinks.links.length);
     return Scaffold(
       backgroundColor: Color(0xff4B4093),
       body: Center(
@@ -28,17 +44,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
             SizedBox(
               height: 30,
             ),
+            Image.network(
+              img_link, // 이미지 링크
+              fit: BoxFit.cover, // 이미지가 위젯 크기보다 클 경우 자동으로 크기를 조절합니다.
+              width: 110, // 위젯의 가로 크기
+              height: 110, // 위젯의 세로 크기
+            ),
+            IconButton(onPressed: () {
+              setState(() {
+                img_link = ImageLinks.links[randomIndex];
+              });
+            }, icon: Icon(Icons.refresh, color: Colors.white,)),
             SizedBox(
               height: 30,
             ),
-            TextInput(width, 'Input ID'),
-            TextInput(width, 'Input Password'),
+            TextInput(_idController, width, 'Input Nickname'),
+            TextInput(_passwordController, width, 'Input ID'),
+            TextInput(_nickNameController, width, 'Input Password'),
             SizedBox(
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
-                },
+                onPressed: _signUp,
                 child: const Text(
                   'SignUp',
                   style: TextStyle(
@@ -55,10 +80,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Padding TextInput(double width, String label) {
+  Padding TextInput(
+      TextEditingController controller, double width, String label) {
     return Padding(
       padding: EdgeInsets.only(top: 20, left: width * 0.1, right: width * 0.1),
       child: TextFormField(
+        controller: controller,
         decoration: InputDecoration(
             labelText: label,
             labelStyle: TextStyle(color: Color(0xffC7C5DD)),
@@ -69,5 +96,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
             fillColor: Color(0xff938CBE)),
       ),
     );
+  }
+
+  Future<void> _signUp() async {
+    final url = Uri.parse('http://18.179.109.81:8080/auth/sign-up/');
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode({
+      'accountID': _idController.text,
+      'password': _passwordController.text,
+      'image' : img_link,
+      'name' : _nickNameController.text
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    print('${response.statusCode}');
+    if (response.statusCode == 200) {
+      print(img_link.toString());
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => LoginScreen()));
+
+    } else {
+      print(http.Response);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('회원가입 실패'),
+          content: Text('아이디와 비밀번호를 확인해주세요.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('확인'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }

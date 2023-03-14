@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:stakanto/screen/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -9,6 +12,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+  String? _errorMessage;
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -44,25 +53,35 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               ],
             ),
-            TextInput(width, 'Input ID'),
-            TextInput(width, 'Input Password'),
+            TextInput(_idController, width, 'Input ID'),
+            TextInput(_passwordController, width, 'Input Password'),
             SizedBox(
-
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
-                  },
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white
+              width: width * 0.8,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _login,
+                child: _isLoading
+                    ? CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : Text(
+                        'Login',
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
-                    ),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xff342D67)
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xff342D67),
+                ),
+              ),
+            ),
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  _errorMessage!,
+                  style: TextStyle(
+                    color: Colors.red,
                   ),
                 ),
               ),
@@ -72,10 +91,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Padding TextInput(double width, String label) {
+  Padding TextInput(
+      TextEditingController controller, double width, String label) {
     return Padding(
       padding: EdgeInsets.only(top: 20, left: width * 0.1, right: width * 0.1),
       child: TextFormField(
+        controller: controller,
         decoration: InputDecoration(
             labelText: label,
             labelStyle: TextStyle(color: Color(0xffC7C5DD)),
@@ -86,5 +107,44 @@ class _LoginScreenState extends State<LoginScreen> {
             fillColor: Color(0xff938CBE)),
       ),
     );
+  }
+
+  Future<void> _login() async {
+    final url = Uri.parse('http://18.179.109.81:8080/auth/login/');
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode({
+      'accountID': _idController.text,
+      'password': _passwordController.text,
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final accessToken = data['accessToken'];
+      final refreshToken = data['refreshToken'];
+
+      print(http.Response);
+      // 로그인 처리 로직
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    } else {
+      print(http.Response);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('로그인 실패'),
+          content: Text('아이디와 비밀번호를 확인해주세요.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('확인'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
