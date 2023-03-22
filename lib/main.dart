@@ -4,6 +4,7 @@ import 'package:stakanto/page/serveculture_page.dart';
 import 'package:stakanto/screen/home_screen.dart';
 import 'package:stakanto/screen/login_screen.dart';
 import 'package:stakanto/screen/signup_screen.dart';
+import 'package:stakanto/test_screen.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     FlutterNativeSplash.remove();
     return MaterialApp(
-      home: const SignUpScreen(),
+      home: HomeScreen(),
     );
   }
 }

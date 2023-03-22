@@ -44,7 +44,14 @@ class _MainSongPageState extends State<MainSongPage> {
                   )
                 ],
               ),
-              Image_widget(width, 'assets/images/pop.png'),
+              InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => KpopScreen()));
+                  },
+                  child: Image_widget(width, 'assets/images/pop.png')),
             ],
           ),
         ),

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:stakanto/screen/home_screen.dart';
+import 'package:stakanto/service/login.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -114,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({
       'accountID': _idController.text,
-      'password': _passwordController.text,
+      'password': _passwordController.text
     });
 
     final response = await http.post(url, headers: headers, body: body);
@@ -124,14 +125,13 @@ class _LoginScreenState extends State<LoginScreen> {
       final accessToken = data['accessToken'];
       final refreshToken = data['refreshToken'];
 
-      print(http.Response);
       // 로그인 처리 로직
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
+
     } else {
-      print(http.Response);
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -147,4 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
+
+
 }
