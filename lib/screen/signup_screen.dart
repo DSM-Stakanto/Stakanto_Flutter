@@ -4,8 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:stakanto/image_list.dart';
 import 'package:stakanto/screen/login_screen.dart';
-import 'package:http/http.dart' as http;
 
+import '../service/dio/api_service.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
 
@@ -19,8 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nickNameController = TextEditingController();
   String img_link = "https://cdn.discordapp.com/attachments/872481713949917228/1062208607053156422/image.png";
-
-
+  late Service service = Service();
 
 
   @override
@@ -98,26 +97,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Future<void> _signUp() async {
-    final url = Uri.parse('http://18.179.109.81:8080/auth/sign-up/');
-    final headers = {'Content-Type': 'application/json'};
-    final body = jsonEncode({
-      'accountID': _idController.text,
-      'password': _passwordController.text,
-      'image' : img_link,
-      'name' : _nickNameController.text
-    });
+  _signUp() async {
+    final result = await service.signUp(_idController.text, _passwordController.text,
+        img_link.toString() , _nickNameController.text);
+    print('클릭');
 
-    final response = await http.post(url, headers: headers, body: body);
-
-    print('${response.statusCode}');
-    if (response.statusCode == 200) {
+    if (result == '성공') {
       print(img_link.toString());
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => LoginScreen()));
 
     } else {
-      print(http.Response);
       showDialog(
         context: context,
         builder: (context) => AlertDialog(

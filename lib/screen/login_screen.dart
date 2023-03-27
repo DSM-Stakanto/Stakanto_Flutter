@@ -1,9 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:stakanto/screen/home_screen.dart';
-import 'package:stakanto/service/login.dart';
+import 'package:stakanto/service/dio/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -16,8 +15,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+
   bool _isLoading = false;
   String? _errorMessage;
+  Service service = Service();
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(
               width: width * 0.8,
               child: ElevatedButton(
-                onPressed: _isLoading ? null : _login,
+                onPressed:_login,
                 child: _isLoading
                     ? CircularProgressIndicator(
                         color: Colors.white,
@@ -110,28 +111,35 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _login() async {
-    final url = Uri.parse('http://18.179.109.81:8080/auth/login/');
-    final headers = {'Content-Type': 'application/json'};
-    final body = jsonEncode({
-      'accountID': _idController.text,
-      'password': _passwordController.text
-    });
+  _login() async {
+    print('클릭');
+    try {
+      final result = await service.login(_idController.text, _passwordController.text);
 
-    final response = await http.post(url, headers: headers, body: body);
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final accessToken = data['accessToken'];
-      final refreshToken = data['refreshToken'];
-
-      // 로그인 처리 로직
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-
-    } else {
+      if (result == '성공') {
+        print('성공');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      } else {
+        print('실패');
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('로그인 실패'),
+            content: Text('아이디와 비밀번호를 확인해주세요.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('확인'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -147,6 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
+
 
 
 }
